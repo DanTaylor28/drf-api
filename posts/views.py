@@ -68,8 +68,8 @@ class PostList(generics.ListCreateAPIView):
     ]
     # more filter search options in the filter menu (corresponds to 3 different
     # filter searches.
-    # the [invalid name] that shows on the filter search is a known rest-framework
-    # error so dont stress about it!
+    # the [invalid name] that shows on the filter search is a known rest
+    # framework error so dont stress about it!
     filterset_fields = [
         # shows posts of users the selected user is following
         'owner__followed__owner__profile',

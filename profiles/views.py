@@ -4,6 +4,7 @@ from rest_framework import status, generics, filters
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
 from .models import Profile
 from .serializers import ProfileSerializer
 from drf_api.permissions import IsOwnerOrReadOnly
@@ -29,7 +30,9 @@ class ProfileList(generics.ListAPIView):
         following_count=Count('owner__following', distinct=True)
     ).order_by('-created_at')
     filter_backends = [
-        filters.OrderingFilter
+        filters.OrderingFilter,
+        # Adds the extra [invalid name] filter search to filter dropdown
+        DjangoFilterBackend
     ]
     ordering_fields = [
         'posts_count',
@@ -37,6 +40,12 @@ class ProfileList(generics.ListAPIView):
         'following_count',
         'owner__following__created_at',
         'owner__followed__created_at'
+    ]
+
+    filterset_fields = [
+        # Shows profiles that are following the selected user
+        # from the filter results
+        'owner__following__followed__profile',
     ]
 
 
