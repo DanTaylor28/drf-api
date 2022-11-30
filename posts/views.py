@@ -1,6 +1,7 @@
+from django.db.models import Count
 from django.http import Http404
 from django.shortcuts import render
-from rest_framework import status, permissions, generics
+from rest_framework import status, permissions, generics, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Post
@@ -39,7 +40,30 @@ class PostList(generics.ListCreateAPIView):
     """
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    queryset = Post.objects.all()
+    queryset = Post.objects.annotate(
+        comments_count=Count('comment', distinct=True),
+        likes_count=Count('likes', distinct=True)
+    ).order_by('-created_at')
+    # filter_backends adds filtering menu
+    filter_backends = [
+        # adds filter by search with the fields to be filtered by below
+        # called 'ordering_fields'
+        filters.OrderingFilter,
+        # adds search bar to filter menu, with fields to search by below
+        # called 'search_fields'
+        filters.SearchFilter
+    ]
+    # explained above
+    search_fields = [
+        'owner__username',
+        'title'
+    ]
+    # explained above
+    ordering_fields = [
+        'comments_count',
+        'likes_count',
+        'likes__created_at'
+    ]
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -88,4 +112,7 @@ class PostDetail(generics.RetrieveUpdateAPIView):
     """
     serializer_class = PostSerializer
     permission_classes = [IsOwnerOrReadOnly]
-    queryset = Post.objects.all()
+    queryset = Post.objects.annotate(
+        comments_count=Count('comment', distinct=True),
+        likes_count=Count('likes', distinct=True)
+    ).order_by('-created_at')
