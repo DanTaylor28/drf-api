@@ -4,6 +4,7 @@ from django.shortcuts import render
 from rest_framework import status, permissions, generics, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django_filters.rest_framework import DjangoFilterBackend
 from .models import Post
 from .serializers import PostSerializer
 from drf_api.permissions import IsOwnerOrReadOnly
@@ -51,7 +52,8 @@ class PostList(generics.ListCreateAPIView):
         filters.OrderingFilter,
         # adds search bar to filter menu, with fields to search by below
         # called 'search_fields'
-        filters.SearchFilter
+        filters.SearchFilter,
+        DjangoFilterBackend,
     ]
     # explained above
     search_fields = [
@@ -63,6 +65,18 @@ class PostList(generics.ListCreateAPIView):
         'comments_count',
         'likes_count',
         'likes__created_at'
+    ]
+    # more filter search options in the filter menu (corresponds to 3 different
+    # filter searches.
+    # the [invalid name] that shows on the filter search is a known rest-framework
+    # error so dont stress about it!
+    filterset_fields = [
+        # shows posts of users the selected user is following
+        'owner__followed__owner__profile',
+        # shows posts that the selected user has liked
+        'likes__owner__profile',
+        # shows posts owned by the selected user
+        'owner__profile',
     ]
 
     def perform_create(self, serializer):

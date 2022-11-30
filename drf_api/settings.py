@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'followers',
     'cloudinary',
     'rest_framework',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
