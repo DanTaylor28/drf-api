@@ -120,7 +120,7 @@ class PostList(generics.ListCreateAPIView):
 
 
 #  Refactored code from above instead using generic views
-class PostDetail(generics.RetrieveUpdateAPIView):
+class PostDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     Retrieve a post and edit or delete it if you own it.
     """
