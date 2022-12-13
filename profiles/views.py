@@ -47,7 +47,7 @@ class ProfileList(generics.ListAPIView):
         # from the filter results
         'owner__following__followed__profile',
         # show all profiles that are followed by the selected user
-        'owner__followed__owner__profile',
+        # 'owner__followed__owner__profile',
     ]
 
 
